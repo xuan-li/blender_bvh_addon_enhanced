@@ -117,6 +117,15 @@ def write_armature(
             # Write children
             for child_bone in my_children:
                 serialized_names.append(child_bone)
+                if bone.tail_local != arm.bones[child_bone].head_local:
+                    file.write("%s\tEnd Site\n" % indent_str)
+                    file.write("%s\t{\n" % indent_str)
+                    loc = bone.tail_local - node_locations[bone_name]
+                    if global_matrix:
+                        loc = global_matrix_3x3 @ loc
+                    file.write("%s\t\tOFFSET %.6f %.6f %.6f\n" % (indent_str, *(loc * global_scale)))
+                    file.write("%s\t}\n" % indent_str)
+
                 write_recursive_nodes(child_bone, indent + 1)
 
         else:
